@@ -10,46 +10,29 @@ namespace isSpam
 {
     internal class Program
     {
-        static readonly string _dataPath = @"C:\Users\Nezna\OneDrive\Desktop\isSpam\isSpam\data\data_one.csv";
-        static readonly string _userInputPath = @"C:\Users\Nezna\OneDrive\Desktop\isSpam\isSpam\User\user.txt";
-        static readonly string _modelPath = @"C:\Users\Nezna\OneDrive\Desktop\isSpam\isSpam\data\Model.zip";
+        public static readonly string _dataPath = @"C:\Users\Nezna\OneDrive\Desktop\isSpam\isSpam\data\data_one.csv";
+        public static readonly string _userInputPath = @"C:\Users\Nezna\OneDrive\Desktop\isSpam\isSpam\User\user.txt";
+        public static readonly string _modelPath = @"C:\Users\Nezna\OneDrive\Desktop\isSpam\isSpam\data\Model.zip";
         static void Main(string[] args)
         {
-            MLContext mlContext = new MLContext();
+            Console.WriteLine("Выберите алгоритм для проверки сообщения на спам:");
+            Console.WriteLine("1.Логистическая регрессия");
+            Console.WriteLine("2.Наивный байесовский классификатор");
+            string choice = Console.ReadLine();
 
-            var textLoader = mlContext.Data.CreateTextLoader(new[]
+            switch (choice)
             {
-                new TextLoader.Column("IsSpam", DataKind.Boolean, 0),
-                new TextLoader.Column("Text", DataKind.String, 1)
-            }, hasHeader: true, separatorChar: ';');
-
-            IDataView dataView = textLoader.Load(_dataPath);
-
-            var pipeline = mlContext.Transforms.Text.FeaturizeText("Features", nameof(IsSpamModel.Text))
-                .Append(mlContext.BinaryClassification.Trainers.LbfgsLogisticRegression(labelColumnName: "IsSpam", featureColumnName: "Features"));
-
-            // Обучение модели
-            var model = pipeline.Fit(dataView);
-
-            // Сохранение модели
-            mlContext.Model.Save(model, dataView.Schema, _modelPath);
-
-            // Предсказание для нового сообщения
-            PredictSpam(mlContext, model);
-        }
-        public static void PredictSpam(MLContext mlContext, ITransformer model)
-        {
-            var predictor = mlContext.Model.CreatePredictionEngine<IsSpamModel, PredictionsModel>(model);
-
-            // Read user input with UTF-8 encoding
-            string userInput = File.ReadAllText(_userInputPath, Encoding.UTF8);
-            var input = new IsSpamModel { Text = userInput };
-
-            // Prediction
-            var prediction = predictor.Predict(input);
-
-            // Output the result
-            Console.WriteLine($"Сообщение: '{input.Text}' {(prediction.Prediction ? "является спамом" : "не является спамом")}");
+                case "1":
+                    LogisticRegressionClassifier.TrainSpam(_dataPath, _modelPath);
+                    LogisticRegressionClassifier.PredictSpam(_userInputPath, _modelPath);                  
+                    break;
+                case "2":
+                    NaiveBayesClassifier.PredictSpam(_userInputPath, _dataPath);
+                    break;
+                default:
+                    Console.WriteLine("Неверный выбор. Пожалуйста, введите 1 или 2.");
+                    break;
+            }
         }
     }
 }
