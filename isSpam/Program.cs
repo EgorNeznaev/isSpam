@@ -18,6 +18,7 @@ namespace isSpam
             Console.WriteLine("Выберите алгоритм для проверки сообщения на спам:");
             Console.WriteLine("1.Логистическая регрессия");
             Console.WriteLine("2.Наивный байесовский классификатор");
+            Console.WriteLine("3.Метод опорных векторов");
             string choice = Console.ReadLine();
 
             switch (choice)
@@ -28,6 +29,12 @@ namespace isSpam
                     break;
                 case "2":
                     NaiveBayesClassifier.PredictSpam(_userInputPath, _dataPath);
+                    break;
+                case "3":
+                    MLContext mlContext = new MLContext();
+                    (double[][] inputs, int[] labels) = Svm.PreprocessTextData(_dataPath, mlContext);
+                    Svm svm = new Svm(inputs, labels);
+                    svm.SvmTraining(_userInputPath, _dataPath);
                     break;
                 default:
                     Console.WriteLine("Неверный выбор. Пожалуйста, введите 1 или 2.");

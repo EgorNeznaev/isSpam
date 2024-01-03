@@ -7,11 +7,10 @@ using System.Threading.Tasks;
 
 namespace isSpam
 {
-    public class PredictionsModel
+    internal class TransformText
     {
-        [ColumnName("PredictedLabel")]
-        public bool Prediction { get; set; }
+        [ColumnName("Label")]
+        public bool IsSpam { get; set; }
+        public float[] Features { get; set; }
     }
-
-
 }
