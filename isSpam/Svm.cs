@@ -29,7 +29,10 @@ namespace isSpam
         private double Kernel(double[] x1, double[] x2)
         {
             // Линейное ядро
-            return Enumerable.Range(0, x1.Length).Sum(i => x1[i] * x2[i]);
+            if (x1.Length == x2.Length)
+                return Enumerable.Range(0, x1.Length).Sum(i => x1[i] * x2[i]);
+            
+            else return 1;
         }
 
         public void Train()
@@ -128,6 +131,7 @@ namespace isSpam
             double[] newInput = PreprocessText(userText, new MLContext());
 
             int prediction = svm.Predict(newInput);
+            //nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn
             Console.WriteLine($"Предсказание: {prediction}");
         }
 
@@ -146,6 +150,7 @@ namespace isSpam
             var featureRow = mlContext.Data.CreateEnumerable<TransformText>(transformedData, reuseRowObject: false).FirstOrDefault();
             if (featureRow == null)
             {
+                //nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn
                 throw new InvalidOperationException("Не удалось преобразовать текст в вектор признаков.");
             }
 

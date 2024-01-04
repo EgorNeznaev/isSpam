@@ -88,6 +88,7 @@ namespace isSpam
             
             bool isSpam = classifier.IsSpam(userInput);
 
+            //nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn
             Console.WriteLine($"Сообщение: '{userInput}' {(isSpam ? "является спамом" : "не является спамом")}");
 
 

@@ -10,16 +10,18 @@ namespace isSpam
 {
     internal class Program
     {
-        public static readonly string _dataPath = @"C:\Users\Nezna\OneDrive\Desktop\isSpam\isSpam\data\data_one.csv";
-        public static readonly string _userInputPath = @"C:\Users\Nezna\OneDrive\Desktop\isSpam\isSpam\User\user.txt";
-        public static readonly string _modelPath = @"C:\Users\Nezna\OneDrive\Desktop\isSpam\isSpam\data\Model.zip";
+        public static readonly string _dataPath = Path.Combine("..", "..", "..", "data", "data_one.csv");
+        public static readonly string _userInputPath = Path.Combine("..", "..", "..", "User", "user.txt");
+        public static readonly string _modelPath = Path.Combine("..", "..", "..", "data", "Model.zip");
+        
         static void Main(string[] args)
         {
+            Console.Clear();
             Console.WriteLine("Выберите алгоритм для проверки сообщения на спам:");
-            Console.WriteLine("1.Логистическая регрессия");
-            Console.WriteLine("2.Наивный байесовский классификатор");
-            Console.WriteLine("3.Метод опорных векторов");
-            string choice = Console.ReadLine();
+            Console.WriteLine("1. Логистическая регрессия");
+            Console.WriteLine("2. Наивный байесовский классификатор");
+            Console.WriteLine("3. Метод опорных векторов");
+            string? choice = Console.ReadLine();
 
             switch (choice)
             {
@@ -37,7 +39,7 @@ namespace isSpam
                     svm.SvmTraining(_userInputPath, _dataPath);
                     break;
                 default:
-                    Console.WriteLine("Неверный выбор. Пожалуйста, введите 1 или 2.");
+                    Main(args);
                     break;
             }
         }

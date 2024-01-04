@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace isSpam
 {
-    internal class LogisticRegressionClassifier: Program
+    internal class LogisticRegressionClassifier : Program
     {
         public static void TrainSpam(string dataPath, string modelPath)
         {
@@ -35,6 +35,7 @@ namespace isSpam
 
             var prediction = predictor.Predict(input);
 
+            //uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu
             Console.WriteLine($"Сообщение: '{input.Text}' {(prediction.Prediction ? "является спамом" : "не является спамом")}");
         }
     }
