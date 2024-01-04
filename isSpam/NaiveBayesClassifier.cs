@@ -76,7 +76,7 @@ namespace isSpam
             return spamLogProbability > hamLogProbability;
         }
 
-        public bool PredictSpam(string userInputPath, string dataPath)
+        public static void PredictSpam(string userInputPath, string dataPath)
         {           
             NaiveBayesClassifier classifier = new NaiveBayesClassifier();
             
@@ -88,7 +88,6 @@ namespace isSpam
             
             bool isSpam = classifier.IsSpam(userInput);
 
-            return isSpam;
             //nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn
             Console.WriteLine($"Сообщение: '{userInput}' {(isSpam ? "является спамом" : "не является спамом")}");
 

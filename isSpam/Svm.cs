@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace isSpam
 {
-    public class SupportVectorMachine
+    public class Svm
     {
         private double[][] inputs; // Входные данные
         private int[] labels; // Метки классов
@@ -18,7 +18,7 @@ namespace isSpam
         private double eps = 1e-3; // Эпсилон
         private int maxPasses = 5; // Максимальное количество проходов
 
-        public SupportVectorMachine(double[][] inputs, int[] labels)
+        public Svm(double[][] inputs, int[] labels)
         {
             this.inputs = inputs;
             this.labels = labels;
@@ -114,29 +114,23 @@ namespace isSpam
             return DecisionFunction(x) >= 0 ? 1 : -1;
         }
         // Использование
-        public bool SvmTraining(string userInputPath, string dataPath)
+        public void SvmTraining(string userInputPath, string dataPath)
         {
             (double[][] inputs, int[] labels) = PreprocessTextData(dataPath, new MLContext());
             
 
-            SupportVectorMachine svm = new SupportVectorMachine(inputs, labels);
+            Svm svm = new Svm(inputs, labels);
             svm.Train();
 
-            bool prediction = PredictFromFile(userInputPath, svm);
-            return prediction;
+            PredictFromFile(userInputPath, svm);
         }
 
-        public bool PredictFromFile(string userInputPath, SupportVectorMachine svm)
+        public void PredictFromFile(string userInputPath, Svm svm)
         {
             string userText = File.ReadAllText(userInputPath);
             double[] newInput = PreprocessText(userText, new MLContext());
 
             int prediction = svm.Predict(newInput);
-
-            if (prediction == -1)
-                return false;
-            else 
-                return true;
             //nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn
             Console.WriteLine($"Предсказание: {prediction}");
         }
