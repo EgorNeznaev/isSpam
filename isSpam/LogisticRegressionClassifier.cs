@@ -9,7 +9,7 @@ namespace isSpam
 {
     internal class LogisticRegressionClassifier : Program
     {
-        public static void TrainSpam(string dataPath, string modelPath)
+        public void TrainSpam(string dataPath, string modelPath)
         {
             MLContext mlContext = new MLContext();
             IDataView dataView = mlContext.Data.LoadFromTextFile<IsSpamModel>(dataPath, hasHeader: true, separatorChar: ';');
@@ -19,11 +19,10 @@ namespace isSpam
 
             ITransformer model = pipeline.Fit(dataView);
 
-            mlContext.Model.Save(model, dataView.Schema, modelPath);
-           
+            mlContext.Model.Save(model, dataView.Schema, modelPath);           
         }
 
-        public static void PredictSpam(string userInputPath, string modelPath)
+        public bool PredictSpam(string userInputPath, string modelPath)
         {
             MLContext mlContext = new MLContext();
 
@@ -35,6 +34,7 @@ namespace isSpam
 
             var prediction = predictor.Predict(input);
 
+            return prediction.Prediction;
             //uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu
             Console.WriteLine($"Сообщение: '{input.Text}' {(prediction.Prediction ? "является спамом" : "не является спамом")}");
         }
