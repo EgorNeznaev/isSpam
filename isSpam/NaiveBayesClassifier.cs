@@ -4,27 +4,42 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace isSpam
 {
-    internal class NaiveBayesClassifier
+    class NaiveBayesClassifier : IPredictable
     {
+        public static string ? DataPath { get; set; }
+
+        public static string ? UserInput { get; set; }
+
+        public static string ? ModelPath { get; set; }
+
         private Dictionary<string, double> spamProbabilities;
-        private Dictionary<string, double> hamProbabilities;
         private double spamMessagesCount;
+
+        private Dictionary<string, double> hamProbabilities;
         private double hamMessagesCount;
 
-        public NaiveBayesClassifier()
+        public NaiveBayesClassifier(string dataPath, string userInput, string modelPath)
         {
+            DataPath = dataPath;
+            UserInput = userInput;
+            ModelPath = modelPath;
+
             spamProbabilities = new Dictionary<string, double>();
             hamProbabilities = new Dictionary<string, double>();
+
             spamMessagesCount = 0;
             hamMessagesCount = 0;
         }
 
-        public void Train(IEnumerable<IsSpamModel> data)
+        public void Train()
         {
-            foreach (var item in data)
+            var trainingData = LoadData();
+
+            foreach (var item in trainingData)
             {
                 var words = item.Text.Split(new char[] { ' ', '.', ',', '!', '?' }, StringSplitOptions.RemoveEmptyEntries);
                 foreach (var word in words)
@@ -42,7 +57,6 @@ namespace isSpam
                 }
             }
 
-            
             foreach (var word in spamProbabilities.Keys.ToList())
             {
                 spamProbabilities[word] = (spamProbabilities[word] + 1) / (spamMessagesCount + 2);
@@ -54,9 +68,31 @@ namespace isSpam
             }
         }
 
-        public bool IsSpam(string message)
+        private static IEnumerable<IsSpamModel> LoadData()
         {
-            var words = message.Split(new char[] { ' ', '.', ',', '!', '?' }, StringSplitOptions.RemoveEmptyEntries);
+            var data = new List<IsSpamModel>();
+            var lines = File.ReadAllLines(DataPath);
+
+            foreach (var line in lines.Skip(1))
+            {
+                var columns = line.Split(';');
+                if (columns.Length == 2)
+                {
+                    data.Add(new IsSpamModel
+                    {
+                        IsSpam = columns[0] == "1",
+                        Text = columns[1]
+                    });
+                }
+            }
+
+            return data;
+        }
+
+        public bool PredictSpam()
+        {
+            var words = UserInput.Split(new char[] { ' ', '.', ',', '!', '?' }, StringSplitOptions.RemoveEmptyEntries);
+
             double spamLogProbability = Math.Log(spamMessagesCount / (spamMessagesCount + hamMessagesCount));
             double hamLogProbability = Math.Log(hamMessagesCount / (spamMessagesCount + hamMessagesCount));
 
@@ -74,47 +110,6 @@ namespace isSpam
             }
 
             return spamLogProbability > hamLogProbability;
-        }
-
-        public static void PredictSpam(string userInputPath, string dataPath)
-        {           
-            NaiveBayesClassifier classifier = new NaiveBayesClassifier();
-            
-            var trainingData = LoadData(dataPath);
-            
-            classifier.Train(trainingData);
-          
-            string userInput = File.ReadAllText(userInputPath, Encoding.UTF8);
-            
-            bool isSpam = classifier.IsSpam(userInput);
-
-            //nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn
-            Console.WriteLine($"Сообщение: '{userInput}' {(isSpam ? "является спамом" : "не является спамом")}");
-
-
-
-        }
-
-        private static IEnumerable<IsSpamModel> LoadData(string dataPath)
-        {
-            var data = new List<IsSpamModel>();
-            var lines = File.ReadAllLines(dataPath);
-
-            foreach (var line in lines.Skip(1)) 
-            {
-                var columns = line.Split(';');
-                if (columns.Length == 2)
-                {
-                    data.Add(new IsSpamModel
-                    {
-                        IsSpam = columns[0] == "1",
-                        Text = columns[1]
-                    });
-                }
-            }
-
-            return data;
-        }
-
+        }               
     }
 }
